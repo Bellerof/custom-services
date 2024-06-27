@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Kdenlive",
+    "icon": "https://cdn.discordapp.com/app-assets/1234142144185237536/1251166466691305573",
+    "executablePath": "C:\\Users\\jessi\\AppData\\Local\\Programs\\kdenlive\\bin\\kdenlive.exe",
+    "executableName": "kdenlive.exe",
+    "priority": 100,
+    "running": false
+  }
+]

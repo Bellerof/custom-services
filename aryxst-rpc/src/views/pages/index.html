@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="/css/global.min.css" />
+  <script src="/js/script.js" defer></script>
+ </head>
+ <body class="text-ctp-text bg-ctp-base">
+  <main class="max-w-4xl mx-auto">
+   <h1 class="text-5xl pb-2 font-bold from-ctp-peach to-ctp-mauve bg-gradient-to-r bg-clip-text text-transparent pt-4">Aryxst's RPC</h1>
+   <div class="bg-ctp-mantle p-8 rounded-md mt-8">
+    <div class="flex justify-between mb-6">
+     <p class="self-center">{{it.data.length}} programs</p>
+     <button id="add-program" class="bg-ctp-crust p-2 rounded-md"><i class="i-lucide-plus align-text-top"></i> Add Program</button>
+    </div>
+    <ul class="space-y-4">
+     {{@each (it.data) => program}}
+     <!---->
+     {{!program.running = it.processes.includes(program.executableName)}}
+     <li class="px-4 py-8 w-full bg-ctp-crust rounded-md relative" data-is-bound-to="{{program.name}}">
+      <button class="delete-program absolute top-2 right-2 bg-red-700 pt-0.5 px-1 rounded-md"><i class="i-lucide-trash"></i></button>
+      <div class="flex flex-row items-center justify-between">
+       <div class="relative min-w-16" aria-label="{{program.name}}">
+        {{@if(program.icon)}}
+        <img src="{{program.icon}}" alt="{{program.name}}" class="max-h-16 max-w-full mx-auto" />
+        {{#else}}
+        <i class="i-lucide-image h-16 w-full"></i>
+        {{/if}}
+        <div class="pt-1">
+         <p class="text-center">{{program.name}}<button class="change-name i-lucide-pen inline w-4 absolute bottom-1.5 -right-5" title="Edit"></button></p>
+        </div>
+       </div>
+
+       <div>
+        <span class="font-semibold">Executable:</span>
+        <span title="{{program.executablePath}}">{{program.executableName}} </span>
+        <span title="{{program.running ? 'Running on the system' : 'Currently not running'}}">
+         <svg viewBox="0 0 100 100" class="inline size-2 {{ program.running ? 'fill-green-500' : 'fill-red-500'}} ml-1"><circle cx="50" cy="50" r="45"></circle></svg>
+        </span>
+       </div>
+
+       <div><label for="priority">Priority: </label><input name="priority" data-is-bound-to="{{program.name}}" type="number" max="1000" class="w-12 rounded-md bg-ctp-mantle text-text text-center" value="{{program.priority}}" /></div>
+      </div>
+     </li>
+     {{/each}}
+    </ul>
+   </div>
+  </main>
+ </body>
+</html>
