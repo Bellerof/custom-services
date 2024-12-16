@@ -172,4 +172,5 @@ dist
 # other
 aryxst-rpc/generated
 aryxst-rpc/**/*/*.min.*
-compress-clips/videos
+compress-clips/src/videos
+commit.md
