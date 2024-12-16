@@ -28,7 +28,7 @@ const options = {
  path:
   args.find(({ name }) => name.endsWith("path"))?.value ??
   join(import.meta.dirname, "videos"),
- maxSize: +args.find(({ name }) => name.endsWith("max-size"))?.value ?? 50 * 1024 * 1024,
+ maxSize: +args.find(({ name }) => name.endsWith("max-size"))?.value || 50 * 1024 * 1024,
  get compressedPath() {
   return join(this.path, "compressed");
  },
