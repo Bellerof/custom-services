@@ -30,13 +30,13 @@ setInterval(async () => {
   rpc.clearActivity();
   return;
  }
- const prioritedProcess = runningProcesses.reduce((a, b) => {
+ const prioritizedProcess = runningProcesses.reduce((a, b) => {
   return a.priority > b.priority ? a : b;
  });
  rpc.setActivity({
-  details: prioritedProcess.name,
+  details: prioritizedProcess.name,
   state: 'Wandering around ig',
-  largeImageKey: prioritedProcess.icon,
-  largeImageText: prioritedProcess.name,
+  largeImageKey: prioritizedProcess.icon,
+  largeImageText: prioritizedProcess.name,
  });
 }, 10000);
