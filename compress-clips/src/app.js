@@ -53,21 +53,17 @@ if (!existsSync(join(options.path, "compressed"))) {
 }
 
 console.log("Watching directory: " + options.path);
-console.log(
- `With a maximum input file size of: ${(options.maxSize / 1024 / 1024).toFixed(2)}MB`
-);
+console.log(`With a maximum input file size of: ${sizeToMB(options.maxSize)}`);
 
 watcher.on("add", async filePath => {
  if (!allowedExtensions.some(ext => filePath.endsWith(ext))) return;
 
- const { id: fileId, size } = await getFileInfo(filePath);
+ const fileInfo = await getFileInfo(filePath);
 
- if (size > options.maxSize) return;
- if (compressed.has(fileId)) return;
+ if (fileInfo.size > options.maxSize) return;
+ if (compressed.has(fileInfo.id)) return;
 
- compressVideo(filePath, { fileId }).save(
-  join(options.compressedPath, basename(filePath))
- );
+ compressVideo(filePath, fileInfo).save(getCompressedFilePath(filePath));
 });
 
 async function getFileInfo(filePath) {
@@ -75,7 +71,15 @@ async function getFileInfo(filePath) {
  return { id: `${ino}:${dev}`, size };
 }
 
-function compressVideo(filePath, data) {
+function getCompressedFilePath(filePath) {
+ return join(options.compressedPath, basename(filePath));
+}
+
+function sizeToMB(size) {
+ return `${(size / 1024 / 1024).toFixed(2)}MB`;
+}
+
+function compressVideo(filePath, fileInfo) {
  return ffmpeg(filePath)
   .outputFPS(60)
   .audioCodec("aac")
@@ -86,8 +90,19 @@ function compressVideo(filePath, data) {
    // Encoding Threads
    "-threads 2",
   ])
-  .on("end", () => {
-   compressed.add(data.fileId);
+  .on("start", () => {
+   console.log(`\nStarting compression of ${filePath}`);
+  })
+  .on("progress", ({ percent }) => {
+   percent && console.log("Progress:", percent);
+  })
+  .on("end", async () => {
+   console.log(
+    `Finished compression of ${filePath} | Original size: ${sizeToMB(
+     fileInfo.size
+    )} | New size: ${sizeToMB((await getFileInfo(getCompressedFilePath(filePath))).size)}`
+   );
+   compressed.add(fileInfo.id);
   })
   .on("error", console.error);
 }
