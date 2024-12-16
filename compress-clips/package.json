@@ -1,0 +1,20 @@
+{
+ "name": "compress-clips",
+ "type": "module",
+ "module": "src/app.js",
+ "description": "Automatically compress videos added on a watched path",
+ "scripts": {
+  "start": "node src/app.js"
+ },
+ "devDependencies": {
+  "@types/command-exists": "^1.2.3",
+  "@types/fluent-ffmpeg": "^2.1.27",
+  "@types/node": "^20.17.10",
+  "@types/node-notifier": "^8.0.5"
+ },
+ "dependencies": {
+  "chokidar": "^4.0.1",
+  "command-exists": "^1.2.9",
+  "fluent-ffmpeg": "^2.1.3"
+ }
+}

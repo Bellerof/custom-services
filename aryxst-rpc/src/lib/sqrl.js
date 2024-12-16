@@ -1,6 +1,6 @@
-import Sqrl from 'squirrelly';
+import Sqrl from "squirrelly";
 
-Sqrl.filters.define('getProperty', (object, property) => {
+Sqrl.filters.define("getProperty", (object, property) => {
  if (!object) return;
  return object[property];
 });

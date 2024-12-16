@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 @font-face {
- font-family: 'Inter Variable';
- src: url(/fonts/Inter-VariableFont_slnt,wght.ttf);
+ font-family: "Inter Variable";
+ src: url(/fonts/Inter-Variable.ttf);
 }
 
 body {
  font-size: 18px;
- font-family: 'Inter Variable';
+ font-family: "Inter Variable";
 }
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
  -webkit-appearance: none;
  margin: 0;
 }

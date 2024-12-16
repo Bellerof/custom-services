@@ -1,98 +1,111 @@
-import { existsSync } from 'fs';
-import { createRequire } from 'module';
-import express from 'express';
-import Sqrl from './lib/sqrl.js';
-import { clientId } from './config.js';
-import { importProcesses, fetchAssets, updateData, renderTags } from './lib/editFunctions.js';
-import { isURL } from './utils/isURL.js';
-import './handleProcesses.js';
-
-const require = createRequire(import.meta.url);
+import { existsSync } from "fs";
+import { mkdir } from "fs/promises";
+import express from "express";
+import Sqrl from "./lib/sqrl.js";
+import { fetchAssets, updateData, createTags } from "./lib/edit-functions.js";
+import { handleProcesses } from "./lib/handle-processes.js";
+import { isURL, readJson } from "./utils.js";
+import { CLIENT_ID, PROCESS_LIST_REFRESH_INTERVAL } from "./config.js";
 
 const app = express();
 
-app.engine('html', Sqrl.renderFile);
-app.set('view engine', 'html');
-app.set('views', import.meta.dirname + '/views/pages');
-app.set('partials', import.meta.dirname + '/views/partials');
+if (!existsSync("generated/")) await mkdir("generated/");
 
-app.use(express.static('public'));
+handleProcesses();
+setTimeout(handleProcesses, PROCESS_LIST_REFRESH_INTERVAL);
+
+await fetchAssets(CLIENT_ID);
+await createTags(
+ await readJson("generated/data.json"),
+ await readJson("generated/assets.json")
+);
+
+app.engine("html", Sqrl.renderFile);
+app.set("view engine", "html");
+app.set("views", import.meta.dirname + "/views/pages");
+app.set("partials", import.meta.dirname + "/views/partials");
+
+app.use(express.static("public"));
 app.use(express.json());
 
-fetchAssets(clientId);
-renderTags(require('../data.json'), require('../assets.json'));
-
-app.get('/', async (req, res) => {
- res.render('index', {
-  data: require('../data.json').sort((a, b) => b.priority - a.priority),
-  assets: require('../assets.json'),
-  processes: importProcesses(),
-  clientId,
+app.get("/", async (req, res) => {
+ res.render("index", {
+  data: await readJson("generated/data.json").sort((a, b) => b.priority - a.priority),
+  assets: await readJson("generated/assets.json"),
+  processes: await readJson("processes.json"),
+  CLIENT_ID,
  });
 });
 
-app.post('/change-icon', (req, res) => {
- const { name, icon } = req.body;
- const data = require('../data.json');
- data[data.findIndex((v) => v.name === name)].icon = icon;
- updateData(data);
+app.post("/change-icon", async (req, res) => {
+ const data = await readJson("generated/data.json");
+
+ data[data.findIndex(item => item.name === req.body.name)].icon = req.body.icon;
+
+ await updateData(data);
  res.send({ success: true });
 });
 
-app.post('/change-name', (req, res) => {
- const { name, newName } = req.body;
- const data = require('../data.json');
- data[data.findIndex((v) => v.name === name)].name = newName;
+app.post("/change-name", async (req, res) => {
+ const data = await readJson("generated/data.json");
 
- updateData(data);
+ data[data.findIndex(item => item.name === req.body.name)].name = req.body.newName;
+
+ await updateData(data);
  res.send({ success: true });
 });
 
-app.post('/change-priority', (req, res) => {
- const { name, priority } = req.body;
- const data = require('../data.json');
+app.post("/change-priority", async (req, res) => {
+ const data = await readJson("generated/data.json");
 
- data[data.findIndex((v) => v.name === name)].priority = priority;
- updateData(data);
+ data[data.findIndex(item => item.name === req.body.name)].priority = req.body.priority;
+
+ await updateData(data);
  res.send({ success: true });
 });
 
-app.post('/add-program', (req, res) => {
- const data = require('../data.json');
+app.post("/add-program", async (req, res) => {
+ const data = await readJson("generated/data.json");
  if (!isURL(req.body.icon)) {
-  const asset = require('../assets.json').find((v) => v.tag === req.body.icon);
+  const asset = await readJson("generated/assets.json").find(
+   item => item.tag === req.body.icon
+  );
   if (asset) {
    req.body.icon = asset.url;
   }
  }
+
  data.push(req.body);
- updateData(data);
+
+ await updateData(data);
  res.send({ success: true });
 });
-app.post('/delete-program', (req, res) => {
- const { name } = req.body;
- const data = require('../data.json');
+
+app.post("/delete-program", async (req, res) => {
+ const data = await readJson("generated/data.json");
+
  data.splice(
-  data.findIndex((v) => v.name === name),
+  data.findIndex(item => item.name === req.body.name),
   1
  );
- updateData(data);
+
+ await updateData(data);
  res.send({ success: true });
 });
 
-app.post('/fetch-assets', (req, res) => {
- fetchAssets(clientId);
+app.post("/fetch-assets", async (req, res) => {
+ await fetchAssets(CLIENT_ID);
  res.send({ success: true });
 });
 
-app.post('/is-valid-path', (req, res) => {
- const { path } = req.body;
- if (existsSync(path)) {
+app.post("/is-valid-path", (req, res) => {
+ if (existsSync(req.body.path)) {
   res.send({ success: true });
  } else {
   res.send({ success: false });
  }
 });
+
 app.listen(3000, () => {
- console.log('Example app listening on  http://localhost:3000/');
+ console.log("Listening on http://localhost:6969");
 });

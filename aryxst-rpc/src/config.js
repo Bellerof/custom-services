@@ -1,1 +1,3 @@
-export const clientId = '1234142144185237536';
+// Not a secret
+export const CLIENT_ID = "1234142144185237536";
+export const PROCESS_LIST_REFRESH_INTERVAL = 10000;

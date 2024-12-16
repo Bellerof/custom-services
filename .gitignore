@@ -168,4 +168,8 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
-aryxst-rpc/*.json
+
+# other
+aryxst-rpc/generated
+aryxst-rpc/**/*/*.min.*
+compress-clips/videos
