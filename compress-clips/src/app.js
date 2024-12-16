@@ -22,7 +22,7 @@ const args = process.argv.slice(2).map(str => {
 /**
  * @type {Array<{name: string, value: string}>}
  * @param {string} path - The path to watch
- * @param {number} maxSize - The maximum size in bytes for file to compress, if the file is larger it will not be compressed. Defaults to Infinity.
+ * @param {number} maxSize - The maximum size in bytes for file to compress, if the file is larger it will not be compressed. Defaults to 50MB.
  */
 const options = {
  path:
